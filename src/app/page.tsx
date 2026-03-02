@@ -114,7 +114,7 @@ function NavPills({ activeSection }: { activeSection: DeckSection }) {
   )
 }
 
-function SectionDots({ activeSectionId }: { activeSectionId: string }) {({ activeSectionId }: { activeSectionId: string }) {
+function SectionDots({ activeSectionId }: { activeSectionId: string }) {
   return (
     <div className="pointer-events-none fixed right-4 top-1/2 z-50 hidden -translate-y-1/2 md:flex flex-col gap-3">
       {SECTIONS.map((s) => (
