@@ -23,9 +23,9 @@ export const SECTIONS: DeckSection[] = [
   { id: 'project', title: 'Проект', from: 8, to: 14 },
   { id: 'route', title: 'Маршрут', from: 15, to: 15 },
   { id: 'characters', title: 'Персонажи', from: 16, to: 18 },
-  { id: 'costumes', title: 'Костюмы и реквизит', from: 19, to: 23 },
+  { id: 'costumes', title: 'Костюмы', from: 19, to: 23 },
   { id: 'episodes', title: 'Эпизоды', from: 24, to: 34 },
-  { id: 'why', title: 'Почему сработает', from: 35, to: 37 },
+  { id: 'why', title: 'Почему мы', from: 35, to: 37 },
   { id: 'contact', title: 'Контакты', from: 38, to: 38 },
 ]
 

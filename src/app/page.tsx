@@ -78,26 +78,43 @@ function useKeyboardNav(activeIndex: number, steps: DeckStep[]) {
   }, [activeIndex, last, steps])
 }
 
-function SectionTabs({ activeSection }: { activeSection: DeckSection }) {
+function NavPills({ activeSection }: { activeSection: DeckSection }) {
+  const pillBase =
+    "shrink-0 flex h-7 items-center rounded-full border border-white/10 bg-ink/60 px-3 py-1 backdrop-blur hover:border-white/20 whitespace-nowrap"
+  const pillText = "font-display text-[10px] uppercase tracking-wide2"
+
   return (
-    <div className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-white/10 bg-ink/55 px-2 py-1 backdrop-blur max-w-[74vw] overflow-x-auto no-scrollbar">
-      {SECTIONS.map((s) => (
-        <button
-          key={s.id}
-          onClick={() => scrollToId(`s${String(s.from).padStart(2, "0")}`)}
-          className={`rounded-full px-2.5 py-1.5 text-[7px] md:text-[11px] transition uppercase tracking-wide2 ${
-            activeSection.id === s.id ? "bg-white/12 text-fog" : "text-ash hover:text-fog"
-          }`}
-          aria-label={`Перейти: ${s.title}`}
-        >
-          {s.title}
-        </button>
-      ))}
+    <div className="pointer-events-auto flex flex-nowrap items-center gap-2 rounded-full border border-white/10 bg-ink/35 px-2 py-1 backdrop-blur overflow-x-auto no-scrollbar max-w-full">
+      {/* Проекты */}
+      <a href="/dvorets" className={`${pillBase} gap-2`} aria-label="Перейти: Дворец">
+        <span className="h-5 w-5 rounded-full bg-[#7a0e12] shadow-[0_0_18px_rgba(122,14,18,0.35)]" />
+        <span className={`${pillText} text-fog/85 hover:text-white`}>ДВОРЕЦ</span>
+      </a>
+
+      <button onClick={() => scrollToId("s01")} className={`${pillBase} gap-2`} aria-label="К началу: Маяк">
+        <span className="h-5 w-5 rounded-full bg-ember/90 shadow-glow" />
+        <span className={`${pillText} text-fog hover:text-white`}>МАЯК</span>
+      </button>
+
+      {/* Разделы */}
+      {SECTIONS.map((s) => {
+        const isActive = activeSection.id === s.id
+        return (
+          <button
+            key={s.id}
+            onClick={() => scrollToId(`s${String(s.from).padStart(2, "0")}`)}
+            className={`${pillBase} ${isActive ? "bg-white/12" : ""}`}
+            aria-label={`Перейти: ${s.title}`}
+          >
+            <span className={`${pillText} ${isActive ? "text-fog" : "text-ash hover:text-fog"}`}>{s.title}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
 
-function SectionDots({ activeSectionId }: { activeSectionId: string }) {
+function SectionDots({ activeSectionId }: { activeSectionId: string }) {({ activeSectionId }: { activeSectionId: string }) {
   return (
     <div className="pointer-events-none fixed right-4 top-1/2 z-50 hidden -translate-y-1/2 md:flex flex-col gap-3">
       {SECTIONS.map((s) => (
@@ -425,26 +442,6 @@ export default function Page() {
     window.history.replaceState({}, "", url.toString())
   }, [activeId])
 
-    // Mobile orientation gating:
-  // - In portrait: only first slide + rotate hint are accessible.
-  // - Once rotated to landscape, we auto-continue to slide 02.
-  useEffect(() => {
-    if (!isMobile || vw === 0) return
-
-    if (isPortrait) {
-      if (activeId !== "s01" && activeId !== "r01") {
-        // Force user back to rotate screen hint.
-        scrollToId("r01")
-      }
-    } else {
-      // Landscape
-      if (activeId === "r01") {
-        // Continue to the deck.
-        scrollToId("s02")
-      }
-    }
-  }, [isMobile, isPortrait, activeId, vw])
-
 // If opened with #sXX — jump
   useEffect(() => {
     const id = window.location.hash.replace("#", "")
@@ -473,35 +470,12 @@ export default function Page() {
     <main ref={deckRef as any} className="deck">
       {/* Top bar */}
       <div className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)]">
-        <div className="mx-auto flex max-w-[1200px] items-start md:items-center justify-between px-3 py-1">
-          <div className="pointer-events-auto flex items-center gap-2">
-            <a
-              href="/dvorets"
-              className="group flex items-center gap-3 rounded-full border border-white/10 bg-ink/60 px-2 py-1 backdrop-blur hover:border-white/20"
-              aria-label="Перейти: Дворец"
-            >
-              <span className="h-5 w-5 rounded-full bg-[#7a0e12] shadow-[0_0_18px_rgba(122,14,18,0.35)]" />
-              <span className="font-display text-[10px] uppercase tracking-wide2 text-fog/85 group-hover:text-white">
-                ДВОРЕЦ
-              </span>
-            </a>
-
-            <button
-              onClick={() => scrollToId("s01")}
-              className="group flex items-center gap-3 rounded-full border border-white/10 bg-ink/60 px-2 py-1 backdrop-blur hover:border-white/20"
-              aria-label="К началу"
-            >
-              <span className="h-5 w-5 rounded-full bg-ember/90 shadow-glow" />
-              <span className="font-display text-[10px] uppercase tracking-wide2 text-fog group-hover:text-white">
-                МАЯК
-              </span>
-            </button>
+        <div className="mx-auto flex max-w-[1200px] items-center gap-3 px-3 py-1">
+          <div className="min-w-0 flex-1">
+            <NavPills activeSection={activeSection} />
           </div>
 
-          {/* Это и есть меню: делаем его кликабельным и чуть больше. */}
-          <SectionTabs activeSection={activeSection} />
-
-          <div className="pointer-events-none hidden md:block text-right">
+          <div className="pointer-events-none hidden md:block shrink-0 text-right">
             <div className="pointer-events-auto rounded-full border border-white/10 bg-ink/55 px-2 py-1 text-[10px] text-ash backdrop-blur">
               {activeIndex + 1} / {steps.length}
             </div>
