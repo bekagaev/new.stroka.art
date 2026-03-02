@@ -79,41 +79,82 @@ function useKeyboardNav(activeIndex: number, steps: DeckStep[]) {
   }, [activeIndex, last, steps])
 }
 
-function NavPills({ activeSection }: { activeSection: DeckSection }) {
-  const pillBase =
-    "shrink-0 flex h-7 items-center rounded-full border border-white/10 bg-ink/60 px-3 py-1 backdrop-blur hover:border-white/20 whitespace-nowrap"
-  const pillText = "font-display text-[10px] uppercase tracking-wide2"
+
+function DeckFullscreenButton() {
+  const [enabled, setEnabled] = useState(false)
+  const [active, setActive] = useState(false)
+
+  useEffect(() => {
+    // Fullscreen API is not reliably supported on iOS Safari for the whole page.
+    setEnabled(!!document.fullscreenEnabled)
+    const onChange = () => setActive(!!document.fullscreenElement)
+    document.addEventListener("fullscreenchange", onChange)
+    return () => document.removeEventListener("fullscreenchange", onChange)
+  }, [])
+
+  if (!enabled) return null
 
   return (
-    <div className="pointer-events-auto flex flex-nowrap items-center gap-2 rounded-full border border-white/10 bg-ink/35 px-2 py-1 backdrop-blur overflow-x-auto no-scrollbar max-w-full">
-      {/* Проекты */}
-      <a href="/dvorets" className={`${pillBase} gap-2`} aria-label="Перейти: Дворец">
+    <button
+      onClick={async () => {
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen()
+          else await document.documentElement.requestFullscreen()
+        } catch {}
+      }}
+      className="pointer-events-auto inline-flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-full border border-white/10 bg-ink/55 text-[12px] text-fog backdrop-blur hover:border-white/20"
+      aria-label={active ? "Выйти из полноэкранного режима" : "Полноэкранный режим"}
+      title={active ? "Exit fullscreen" : "Fullscreen"}
+      type="button"
+    >
+      ⛶
+    </button>
+  )
+}
+
+
+function NavPills({ activeSection }: { activeSection: DeckSection }) {
+  const projectBtn =
+    "shrink-0 flex h-7 md:h-8 items-center rounded-full border border-white/10 bg-ink/60 px-3 md:px-4 py-1 backdrop-blur hover:border-white/20 whitespace-nowrap"
+  const sectionGroup =
+    "shrink-0 flex h-7 md:h-8 items-center rounded-full border border-white/10 bg-ink/35 px-2 md:px-3 py-1 backdrop-blur overflow-x-auto no-scrollbar whitespace-nowrap"
+  const sectionItem = "shrink-0 rounded-full px-2 md:px-3 py-1"
+  const textBase = "font-display text-[10px] md:text-[11px] lg:text-[12px] uppercase tracking-wide2"
+
+  return (
+    <div className="pointer-events-auto flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar max-w-full">
+      {/* Проекты — две отдельные кнопки */}
+      <a href="/dvorets" className={`${projectBtn} gap-2`} aria-label="Перейти: Дворец">
         <span className="h-5 w-5 rounded-full bg-[#7a0e12] shadow-[0_0_18px_rgba(122,14,18,0.35)]" />
-        <span className={`${pillText} text-fog/85 hover:text-white`}>ДВОРЕЦ</span>
+        <span className={`${textBase} text-fog/85 hover:text-white`}>ДВОРЕЦ</span>
       </a>
 
-      <button onClick={() => scrollToId("s01")} className={`${pillBase} gap-2`} aria-label="К началу: Маяк">
+      <button onClick={() => scrollToId("s01")} className={`${projectBtn} gap-2`} aria-label="К началу: Маяк" type="button">
         <span className="h-5 w-5 rounded-full bg-ember/90 shadow-glow" />
-        <span className={`${pillText} text-fog hover:text-white`}>МАЯК</span>
+        <span className={`${textBase} text-fog hover:text-white`}>МАЯК</span>
       </button>
 
-      {/* Разделы */}
-      {SECTIONS.map((s) => {
-        const isActive = activeSection.id === s.id
-        return (
-          <button
-            key={s.id}
-            onClick={() => scrollToId(`s${String(s.from).padStart(2, "0")}`)}
-            className={`${pillBase} ${isActive ? "bg-white/12" : ""}`}
-            aria-label={`Перейти: ${s.title}`}
-          >
-            <span className={`${pillText} ${isActive ? "text-fog" : "text-ash hover:text-fog"}`}>{s.title}</span>
-          </button>
-        )
-      })}
+      {/* Разделы — общий контур, без индивидуальных контуров внутри */}
+      <div className={sectionGroup} aria-label="Разделы презентации">
+        {SECTIONS.map((s) => {
+          const isActive = activeSection.id === s.id
+          return (
+            <button
+              key={s.id}
+              onClick={() => scrollToId(`s${String(s.from).padStart(2, "0")}`)}
+              className={`${sectionItem} ${isActive ? "bg-white/12" : "hover:bg-white/5"}`}
+              aria-label={`Перейти: ${s.title}`}
+              type="button"
+            >
+              <span className={`${textBase} ${isActive ? "text-fog" : "text-ash hover:text-fog"}`}>{s.title}</span>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
+
 
 function SectionDots({ activeSectionId }: { activeSectionId: string }) {
   return (
@@ -214,13 +255,15 @@ function StorylinesHotspots() {
   )
 }
 
+
 function ContactsHotspots() {
+  // Невидимые крупные зоны без hover-анимаций: важно просто попадание по областям.
   return (
     <div className="absolute inset-0">
-      {/* Изучить план Б — по центру сверху */}
+      {/* Изучить план Б — верхняя зона */}
       <a
         href="/plan-b"
-        className="absolute left-[22.5%] top-[8.5%] h-[7.5%] w-[55%] rounded-xl border border-transparent hover:border-white/25 hover:bg-white/5"
+        className="absolute left-[12%] top-[6%] h-[12%] w-[76%] cursor-pointer rounded-xl"
         aria-label="Изучить план Б"
       />
 
@@ -229,21 +272,23 @@ function ContactsHotspots() {
         href="https://t.me/bekagaev"
         target="_blank"
         rel="noreferrer"
-        className="absolute left-[22.5%] top-[49%] h-[21%] w-[55%] rounded-xl border border-transparent hover:border-white/25 hover:bg-white/5"
+        className="absolute left-[10%] top-[43%] h-[30%] w-[80%] cursor-pointer rounded-xl"
         aria-label="Telegram"
       />
 
-      {/* Stroka — только логотип снизу */}
+      {/* Stroka — логотип снизу */}
       <a
         href="https://stroka.art/"
         target="_blank"
         rel="noreferrer"
-        className="absolute left-[8.5%] top-[71.5%] h-[25.2%] w-[68.7%] rounded-xl border border-transparent hover:border-white/25 hover:bg-white/5"
+        className="absolute left-[4%] top-[66%] h-[32%] w-[86%] cursor-pointer rounded-xl"
         aria-label="stroka.art"
       />
     </div>
   )
 }
+
+
 
 
 function VideoFrame({
@@ -262,6 +307,7 @@ function VideoFrame({
   const ref = useRef<HTMLVideoElement | null>(null)
   const [blocked, setBlocked] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [muted, setMuted] = useState(true)
 
   useEffect(() => {
     const v = ref.current
@@ -272,9 +318,11 @@ function VideoFrame({
       return
     }
 
-    // Попытка автозапуска. Если браузер блокирует звук без жеста — покажем кнопку.
+    // Автозапуск: в большинстве браузеров возможен только muted.
     const tryPlay = async () => {
       try {
+        v.muted = true
+        setMuted(true)
         await v.play()
         setBlocked(false)
       } catch {
@@ -285,9 +333,35 @@ function VideoFrame({
     tryPlay()
   }, [isActive])
 
+  const enterVideoFullscreen = async () => {
+    const v: any = ref.current
+    if (!v) return
+    try {
+      if (v.requestFullscreen) await v.requestFullscreen()
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen() // iOS native video fullscreen
+    } catch {}
+  }
+
+  const toggleMute = async () => {
+    const v = ref.current
+    if (!v) return
+    try {
+      const nextMuted = !muted
+      v.muted = nextMuted
+      setMuted(nextMuted)
+      if (v.paused) await v.play()
+    } catch {}
+  }
+
   return (
     <div className="relative flex h-full w-full items-center justify-center px-3 py-12 md:px-8">
-      <div className={`relative ${isMobile && isPortrait && step.id === "s01" ? "w-[min(100vw,56.25vh)] h-[min(177.777vw,100vh)]" : "w-[min(100vw,177.777vh)] h-[min(56.25vw,100vh)]"}`}>
+      <div
+        className={`relative ${
+          isMobile && isPortrait && step.id === "s01"
+            ? "w-[min(100vw,56.25vh)] h-[min(177.777vw,100vh)]"
+            : "w-[min(100vw,177.777vh)] h-[min(56.25vw,100vh)]"
+        }`}
+      >
         <video
           ref={ref}
           src={step.src}
@@ -304,12 +378,37 @@ function VideoFrame({
           }}
         />
 
-        {(!isPlaying || blocked) && (
+        {/* маленькая кнопка fullscreen в углу видео */}
+        <button
+          onClick={enterVideoFullscreen}
+          type="button"
+          aria-label="Fullscreen video"
+          title="Fullscreen"
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-ink/40 text-fog backdrop-blur hover:border-white/30"
+        >
+          ⛶
+        </button>
+
+        {/* кнопка звука */}
+        <button
+          onClick={toggleMute}
+          type="button"
+          aria-label={muted ? "Включить звук" : "Выключить звук"}
+          title={muted ? "Sound on" : "Sound off"}
+          className="absolute right-3 top-12 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-white/20 bg-ink/40 text-fog backdrop-blur hover:border-white/30"
+        >
+          {muted ? "🔇" : "🔊"}
+        </button>
+
+        {/* если браузер заблокировал запуск (редко, но бывает) — показываем кнопку */}
+        {blocked && (
           <button
             onClick={async () => {
               const v = ref.current
               if (!v) return
               try {
+                v.muted = false
+                setMuted(false)
                 await v.play()
                 setBlocked(false)
               } catch {
@@ -318,9 +417,32 @@ function VideoFrame({
             }}
             className="absolute inset-0 flex items-center justify-center"
             aria-label="Воспроизвести"
+            type="button"
           >
             <span className="rounded-full border border-white/25 bg-ink/55 px-4 py-3 text-xs text-fog backdrop-blur hover:border-white/35">
-              ▶ Воспроизвести (со звуком)
+              ▶ Воспроизвести
+            </span>
+          </button>
+        )}
+
+        {/* если пользователь поставил паузу — показываем маленький play */}
+        {!blocked && !isPlaying && (
+          <button
+            onClick={async () => {
+              const v = ref.current
+              if (!v) return
+              try {
+                await v.play()
+              } catch {
+                setBlocked(true)
+              }
+            }}
+            className="absolute inset-0 flex items-center justify-center"
+            aria-label="Воспроизвести"
+            type="button"
+          >
+            <span className="rounded-full border border-white/15 bg-ink/35 px-3 py-2 text-xs text-fog backdrop-blur hover:border-white/25">
+              ▶
             </span>
           </button>
         )}
@@ -329,27 +451,30 @@ function VideoFrame({
   )
 }
 
+
+
 function RotateFrame() {
   return (
     <div className="relative flex h-full w-full items-center justify-center bg-[#05070b]">
-      <div className="absolute inset-0 opacity-70" style={{ background: "radial-gradient(900px 500px at 70% 20%, rgba(255,190,120,0.08), transparent 55%), radial-gradient(800px 420px at 30% 80%, rgba(120,170,255,0.08), transparent 55%)" }} />
-      <div className="relative flex flex-col items-center gap-6 px-8 text-center">
-        <div className="h-20 w-20 rounded-3xl border border-white/15 bg-white/5 backdrop-blur flex items-center justify-center">
-          <div className="relative h-10 w-10">
-            <div className="absolute inset-0 rounded-full border-2 border-white/35" />
-            <div className="absolute left-1/2 top-[-2px] -translate-x-1/2 h-3 w-3 rotate-45 border-t-2 border-r-2 border-white/35" />
-          </div>
-        </div>
+      <div
+        className="absolute inset-0 opacity-70"
+        style={{
+          background:
+            "radial-gradient(900px 500px at 70% 20%, rgba(255,190,120,0.08), transparent 55%), radial-gradient(800px 420px at 30% 80%, rgba(120,170,255,0.08), transparent 55%)",
+        }}
+      />
+      <div className="relative flex flex-col items-center gap-3 px-8 text-center">
         <div className="text-fog uppercase tracking-[0.28em] text-[14px] md:text-[16px]">
-          ПОВЕРНИТЕ ТЕЛЕФОН
+          Поверните телефон
         </div>
         <div className="text-ash text-[12px] md:text-[13px]">
-          Дальше презентация идёт в горизонтальном режиме
+          Презентация идет в горизонтальном режиме
         </div>
       </div>
     </div>
   )
 }
+
 
 function SlideFrame({ step, isActive, isMobile, isPortrait, nextId }: { step: DeckStep; isActive: boolean; isMobile: boolean; isPortrait: boolean; nextId?: string }) {
   if (step.kind === "video") {
@@ -386,6 +511,7 @@ export default function Page() {
     const on = () => {
       setVw(window.innerWidth)
       setVh(window.innerHeight)
+      document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`)
     }
     on()
     window.addEventListener("resize", on)
@@ -476,8 +602,9 @@ export default function Page() {
             <NavPills activeSection={activeSection} />
           </div>
 
-          <div className="pointer-events-none hidden md:block shrink-0 text-right">
-            <div className="pointer-events-auto rounded-full border border-white/10 bg-ink/55 px-2 py-1 text-[10px] text-ash backdrop-blur">
+          <div className="pointer-events-auto shrink-0 flex items-center gap-2">
+            <DeckFullscreenButton />
+            <div className="hidden md:block rounded-full border border-white/10 bg-ink/55 px-2 py-1 text-[10px] text-ash backdrop-blur">
               {activeIndex + 1} / {steps.length}
             </div>
           </div>

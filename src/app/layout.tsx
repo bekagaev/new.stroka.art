@@ -35,6 +35,11 @@ const display = localFont({
 export const metadata: Metadata = {
   title: 'Маяк — интерактивная презентация',
   description: 'Проект «Маяк» — презентация в формате сайта (скролл, навигация, интерактив).',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/icon.png',
+  },
 }
 
 export default function RootLayout({
