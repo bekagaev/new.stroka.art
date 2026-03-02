@@ -280,7 +280,7 @@ function ContactsHotspots() {
       {/* Plan B (верхняя зона) */}
       <a
         href="/plan-b"
-        className="absolute left-[0.8%] top-[2.5%] h-[13%] w-[42%] cursor-pointer"
+        className="absolute left-[1.5%] top-[6.5%] h-[11%] w-[30%] cursor-pointer"
         aria-label="Изучить план B"
       />
       {/* TG (середина) */}
@@ -288,7 +288,7 @@ function ContactsHotspots() {
         href="https://t.me/bekagaev"
         target="_blank"
         rel="noreferrer"
-        className="absolute left-[0.8%] top-[33.5%] h-[27%] w-[42%] cursor-pointer"
+        className="absolute left-[1.5%] top-[39.5%] h-[29%] w-[30%] cursor-pointer"
         aria-label="Telegram"
       />
       {/* Stroka (логотип снизу) */}
@@ -296,7 +296,7 @@ function ContactsHotspots() {
         href="https://stroka.art/"
         target="_blank"
         rel="noreferrer"
-        className="absolute left-[0.4%] top-[63.5%] h-[34%] w-[44%] cursor-pointer"
+        className="absolute left-[1.5%] top-[74%] h-[23%] w-[30%] cursor-pointer"
         aria-label="Stroka.art"
       />
     </>
@@ -450,14 +450,26 @@ function SlideFrame({
   nextId?: string;
 }) {
   if (step.kind === "video") {
-    return <VideoFrame step={step} isActive={isActive} nextId={nextId} />;
+    // Важно: видео (как и картинки) должно заполнять секцию.
+    // Без absolute/inset-0 на некоторых браузерах высота может схлопнуться (и останется только звук).
+    return (
+      <div className="absolute inset-0">
+        <VideoFrame step={step} isActive={isActive} nextId={nextId} />
+      </div>
+    );
   }
 
   if (step.kind === "rotate") {
-    return <RotateFrame />;
+    return (
+      <div className="absolute inset-0">
+        <RotateFrame />
+      </div>
+    );
   }
 
-  const isFirstPortraitMobile = isMobile && isPortrait && step.num === 1;
+  // На мобилке в портретном режиме показываем ВСЕ слайды полностью (contain),
+  // иначе 16:9 режется и выглядит «сломано».
+  const shouldContain = isMobile && isPortrait;
 
   return (
     <div className="absolute inset-0">
@@ -465,10 +477,10 @@ function SlideFrame({
       <img
         src={step.src}
         alt={`Slide ${step.num}`}
-        className={`absolute inset-0 h-full w-full ${isFirstPortraitMobile ? "object-contain" : "object-cover"}`}
+        className={`absolute inset-0 h-full w-full ${shouldContain ? "object-contain" : "object-cover"}`}
         draggable={false}
       />
-      {isFirstPortraitMobile && <div className="absolute inset-0 -z-10 bg-ink" />}
+      {shouldContain && <div className="absolute inset-0 -z-10 bg-ink" />}
 
       {/* интерактив */}
       {step.num === 16 && <StorylinesHotspots />}
@@ -567,13 +579,15 @@ export default function Page() {
   return (
     <>
       {/* Top bar */}
-      <div className="pointer-events-none fixed left-3 right-3 top-3 z-50 flex items-center justify-between gap-3">
-        <NavPills activeSection={activeSection} />
+      <div className={`topbar pointer-events-none fixed left-3 right-3 top-3 z-50 ${isMobile ? "topbar--mobile" : ""}`}>
+        <div className={`flex items-center justify-between gap-3 ${isMobile ? "topbar__inner--mobile" : ""}`}>
+          <NavPills activeSection={activeSection} />
 
-        <div className="pointer-events-auto flex items-center gap-2">
-          <DeckFullscreenButton />
-          <div className="rounded-full border border-white/10 bg-ink/55 px-3 py-2 text-[12px] md:text-[14px] text-fog backdrop-blur">
-            {activeIndex + 1} / {steps.length}
+          <div className="pointer-events-auto flex items-center gap-2">
+            <DeckFullscreenButton />
+            <div className="rounded-full border border-white/10 bg-ink/55 px-3 py-2 text-[12px] md:text-[14px] text-fog backdrop-blur">
+              {activeIndex + 1} / {steps.length}
+            </div>
           </div>
         </div>
       </div>
