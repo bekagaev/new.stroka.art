@@ -296,7 +296,8 @@ function ContactsHotspots() {
         href="https://stroka.art/"
         target="_blank"
         rel="noreferrer"
-        className="absolute left-[1.5%] top-[74%] h-[23%] w-[30%] cursor-pointer"
+        className="absolute left-[1.5%] h-[23%] w-[30%] cursor-pointer"
+        style={{ top: "calc(74% - 10px)" }}
         aria-label="Stroka.art"
       />
     </>
@@ -404,7 +405,11 @@ function VideoFrame({
           aria-label="Play"
           type="button"
         >
-          <span className="text-[18px]">▶</span>
+          <span className="flex h-16 w-16 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white/90 backdrop-blur">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 7.5v9l8-4.5-8-4.5z" fill="currentColor" />
+            </svg>
+          </span>
         </button>
       )}
 
@@ -416,7 +421,11 @@ function VideoFrame({
           aria-label="Play"
           type="button"
         >
-          <span className="text-[18px] opacity-80">▶</span>
+          <span className="flex h-16 w-16 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white/90 backdrop-blur">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 7.5v9l8-4.5-8-4.5z" fill="currentColor" />
+            </svg>
+          </span>
         </button>
       )}
     </div>
@@ -449,9 +458,48 @@ function SlideFrame({
   isPortrait: boolean;
   nextId?: string;
 }) {
+  // На мобильных браузерах (iOS/Android) "настоящий" deck со snap/100vh часто ломается:
+  // наезжают секции, появляются гигантские разрывы из‑за адресных баров.
+  // Поэтому mobile = стабильный длинный скролл с фиксированным 16:9 кадром (как Plan B).
+  const mobileFlow = isMobile;
+
+  if (mobileFlow) {
+    if (step.kind === "video") {
+      return (
+        <div className="relative w-full aspect-video bg-black">
+          <VideoFrame step={step} isActive={isActive} nextId={nextId} />
+        </div>
+      );
+    }
+
+    if (step.kind === "rotate") {
+      return (
+        <div className="relative w-full aspect-video bg-ink">
+          <div className="absolute inset-0">
+            <RotateFrame />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative w-full aspect-video bg-ink">
+        <img
+          src={step.src}
+          alt={`Slide ${step.num}`}
+          className="absolute inset-0 h-full w-full object-contain"
+          draggable={false}
+        />
+
+        {/* интерактив */}
+        {step.num === 16 && <StorylinesHotspots />}
+        {step.num === 38 && <ContactsHotspots />}
+      </div>
+    );
+  }
+
+  // Desktop — deck/fullscreen
   if (step.kind === "video") {
-    // Важно: видео (как и картинки) должно заполнять секцию.
-    // Без absolute/inset-0 на некоторых браузерах высота может схлопнуться (и останется только звук).
     return (
       <div className="absolute inset-0">
         <VideoFrame step={step} isActive={isActive} nextId={nextId} />
@@ -467,20 +515,16 @@ function SlideFrame({
     );
   }
 
-  // На мобилке в портретном режиме показываем ВСЕ слайды полностью (contain),
-  // иначе 16:9 режется и выглядит «сломано».
-  const shouldContain = isMobile && isPortrait;
+  const shouldContain = false; // на десктопе всегда cover
 
   return (
     <div className="absolute inset-0">
-      {/* обычный img — без Next/Image оптимайзера (в dev он часто грузит очень медленно) */}
       <img
         src={step.src}
         alt={`Slide ${step.num}`}
         className={`absolute inset-0 h-full w-full ${shouldContain ? "object-contain" : "object-cover"}`}
         draggable={false}
       />
-      {shouldContain && <div className="absolute inset-0 -z-10 bg-ink" />}
 
       {/* интерактив */}
       {step.num === 16 && <StorylinesHotspots />}
@@ -489,7 +533,7 @@ function SlideFrame({
   );
 }
 
-export default function Page() {
+export default function Page() { {
   const [vw, setVw] = useState(0);
   const [vh, setVh] = useState(0);
 

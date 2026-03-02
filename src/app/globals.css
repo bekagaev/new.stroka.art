@@ -59,23 +59,28 @@ body::before {
   scroll-snap-stop: always;
 }
 
-/* Mobile: убираем snap, чтобы не было «наездов» и нестабильного поведения браузерных баров */
+/* Mobile: делаем стабильный "длинный скролл" как Plan B (без 100vh секций).
+   Это убирает наезды/разрывы из‑за адресных баров iOS/Android. */
 @media (max-width: 900px) {
   .deck {
+    height: auto;
+    overflow: visible;
     scroll-snap-type: none;
   }
   .slide {
+    min-height: auto;
     scroll-snap-align: none;
     scroll-snap-stop: normal;
   }
 }
 
+
 /* Mobile topbar: поднять к самому верху и уменьшить на ~30%, не меняя дизайн */
 @media (max-width: 900px) {
   .topbar.topbar--mobile {
-    top: calc(env(safe-area-inset-top) + 2px) !important;
-    left: 8px !important;
-    right: 8px !important;
+    top: env(safe-area-inset-top) !important;
+    left: 6px !important;
+    right: 6px !important;
   }
 
   .topbar__inner--mobile {
