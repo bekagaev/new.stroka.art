@@ -3,6 +3,12 @@ import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
 import './globals.css'
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
+
 const ui = Inter({
   subsets: ['latin', 'cyrillic'],
   variable: '--font-ui',

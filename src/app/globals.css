@@ -46,7 +46,8 @@ body::before {
 
 .slide {
   position: relative;
-  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
@@ -56,3 +57,6 @@ body::before {
     scroll-behavior: auto;
   }
 }
+
+.no-scrollbar::-webkit-scrollbar{display:none;}
+.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}

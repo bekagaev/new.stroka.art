@@ -80,12 +80,12 @@ function useKeyboardNav(activeIndex: number, steps: DeckStep[]) {
 
 function SectionTabs({ activeSection }: { activeSection: DeckSection }) {
   return (
-    <div className="pointer-events-auto hidden md:flex items-center gap-2 rounded-full border border-white/10 bg-ink/55 p-1.5 backdrop-blur">
+    <div className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-white/10 bg-ink/55 px-2 py-1 backdrop-blur max-w-[74vw] overflow-x-auto no-scrollbar">
       {SECTIONS.map((s) => (
         <button
           key={s.id}
           onClick={() => scrollToId(`s${String(s.from).padStart(2, "0")}`)}
-          className={`rounded-full px-4 py-2.5 text-[12px] transition uppercase tracking-wide2 ${
+          className={`rounded-full px-2.5 py-1.5 text-[7px] md:text-[11px] transition uppercase tracking-wide2 ${
             activeSection.id === s.id ? "bg-white/12 text-fog" : "text-ash hover:text-fog"
           }`}
           aria-label={`Перейти: ${s.title}`}
@@ -173,12 +173,12 @@ function StorylinesHotspots() {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="font-display text-xs uppercase tracking-wide2 text-ember">{copy[pick].t}</div>
+                <div className="font-display text-[10px] uppercase tracking-wide2 text-ember">{copy[pick].t}</div>
                 <div className="mt-1 text-sm text-ash leading-relaxed">{copy[pick].d}</div>
               </div>
               <button
                 onClick={() => setPick(null)}
-                className="rounded-full border border-white/15 bg-white/5 px-3 py-2 text-xs text-fog hover:border-white/25"
+                className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] text-fog hover:border-white/25"
               >
                 Закрыть
               </button>
@@ -472,27 +472,27 @@ export default function Page() {
   return (
     <main ref={deckRef as any} className="deck">
       {/* Top bar */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 z-50">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-2">
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top)]">
+        <div className="mx-auto flex max-w-[1200px] items-start md:items-center justify-between px-3 py-1">
           <div className="pointer-events-auto flex items-center gap-2">
             <a
               href="/dvorets"
-              className="group flex items-center gap-3 rounded-full border border-white/10 bg-ink/60 px-3 py-1.5 backdrop-blur hover:border-white/20"
+              className="group flex items-center gap-3 rounded-full border border-white/10 bg-ink/60 px-2 py-1 backdrop-blur hover:border-white/20"
               aria-label="Перейти: Дворец"
             >
-              <span className="h-6 w-6 rounded-full bg-[#7a0e12] shadow-[0_0_18px_rgba(122,14,18,0.35)]" />
-              <span className="font-display text-xs uppercase tracking-wide2 text-fog/85 group-hover:text-white">
+              <span className="h-5 w-5 rounded-full bg-[#7a0e12] shadow-[0_0_18px_rgba(122,14,18,0.35)]" />
+              <span className="font-display text-[10px] uppercase tracking-wide2 text-fog/85 group-hover:text-white">
                 ДВОРЕЦ
               </span>
             </a>
 
             <button
               onClick={() => scrollToId("s01")}
-              className="group flex items-center gap-3 rounded-full border border-white/10 bg-ink/60 px-3 py-1.5 backdrop-blur hover:border-white/20"
+              className="group flex items-center gap-3 rounded-full border border-white/10 bg-ink/60 px-2 py-1 backdrop-blur hover:border-white/20"
               aria-label="К началу"
             >
-              <span className="h-6 w-6 rounded-full bg-ember/90 shadow-glow" />
-              <span className="font-display text-xs uppercase tracking-wide2 text-fog group-hover:text-white">
+              <span className="h-5 w-5 rounded-full bg-ember/90 shadow-glow" />
+              <span className="font-display text-[10px] uppercase tracking-wide2 text-fog group-hover:text-white">
                 МАЯК
               </span>
             </button>
@@ -502,7 +502,7 @@ export default function Page() {
           <SectionTabs activeSection={activeSection} />
 
           <div className="pointer-events-none hidden md:block text-right">
-            <div className="pointer-events-auto rounded-full border border-white/10 bg-ink/55 px-3 py-2 text-xs text-ash backdrop-blur">
+            <div className="pointer-events-auto rounded-full border border-white/10 bg-ink/55 px-2 py-1 text-[10px] text-ash backdrop-blur">
               {activeIndex + 1} / {steps.length}
             </div>
           </div>
