@@ -533,7 +533,7 @@ function SlideFrame({
   );
 }
 
-export default function Page() { {
+export default function Page() {
   const [vw, setVw] = useState(0);
   const [vh, setVh] = useState(0);
 
