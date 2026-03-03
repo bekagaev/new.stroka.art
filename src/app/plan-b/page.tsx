@@ -22,13 +22,22 @@ export default function PlanBPage() {
           ))}
         </div>
 
-        {/* Кнопка в конце — назад к контактам основной презентации */}
-        <div className="flex justify-center py-10">
+        {/* Кнопки в конце */}
+        <div className="flex flex-col items-center gap-3 pt-4 pb-8 sm:flex-row sm:justify-center sm:gap-4 sm:pt-8 sm:pb-10">
           <a
-            href="https://t.me/bekagaev" target="_blank" rel="noreferrer"
-            className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-7 py-4 text-sm uppercase tracking-wide2 text-fog hover:border-white/30 hover:bg-white/10"
+            href="https://t.me/bekagaev"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex w-full max-w-[360px] items-center justify-center rounded-full border border-white/20 bg-white/5 px-5 py-3 text-[11px] uppercase tracking-wide2 text-fog hover:border-white/30 hover:bg-white/10 whitespace-nowrap sm:w-auto sm:px-7 sm:py-4 sm:text-sm"
           >
             Проследовать за светом маяка
+          </a>
+
+          <a
+            href="/#s01"
+            className="inline-flex w-full max-w-[360px] items-center justify-center rounded-full border border-white/20 bg-white/5 px-5 py-3 text-[11px] uppercase tracking-wide2 text-fog hover:border-white/30 hover:bg-white/10 whitespace-nowrap sm:w-auto sm:px-7 sm:py-4 sm:text-sm"
+          >
+            Вернуться к плану А
           </a>
         </div>
       </div>
