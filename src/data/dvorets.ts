@@ -1,12 +1,12 @@
 import { type DeckSection, type DeckStep } from "@/data/deck";
 
 // ДВОРЕЦ — презентация (63 слайда) «Тишина на кончиках крыльев»
-// Меню сделано по структуре самих разделителей в презентации:
-// «ГЕРОИ», «ВИЗУАЛ», «СЦЕНОГРАФИЯ», «НАСЛЕДИЕ» + логические блоки.
+// Отдельное меню для страницы /dvorets.
+// Пункт «СТРОКА» из меню убран: сам слайд сохранён, но включён в раздел «ПРОЕКТ».
+// Rotate-подсказка на мобилке убрана полностью.
 
 export const DVO_SECTIONS: DeckSection[] = [
-  { id: "project", title: "ПРОЕКТ", from: 1, to: 2 },
-  { id: "stroka", title: "СТРОКА", from: 3, to: 3 },
+  { id: "project", title: "ПРОЕКТ", from: 1, to: 3 },
   { id: "palace", title: "ДВОРЕЦ", from: 4, to: 7 },
   { id: "heroes", title: "ГЕРОИ", from: 8, to: 11 },
   { id: "looks", title: "ОБРАЗЫ", from: 12, to: 17 },
@@ -18,8 +18,7 @@ export const DVO_SECTIONS: DeckSection[] = [
 ];
 
 function sectionIdFor(n: number): DeckSection["id"] {
-  if (n <= 2) return "project";
-  if (n === 3) return "stroka";
+  if (n <= 3) return "project";
   if (n >= 4 && n <= 7) return "palace";
   if (n >= 8 && n <= 11) return "heroes";
   if (n >= 12 && n <= 17) return "looks";
@@ -38,18 +37,7 @@ const IMG = (n: number): DeckStep => {
     num: n,
     sectionId: sectionIdFor(n),
     src: `/dvorets/slides/slide-${String(n).padStart(2, "0")}.webp`,
-  };
+  } as DeckStep;
 };
 
-// Rotate-подсказка: не блокирует, просто информирует.
-const ROTATE: DeckStep = {
-  id: "r01",
-  kind: "rotate",
-  sectionId: "project",
-  src: "",
-};
-
-export const DVO_STEPS: DeckStep[] = [
-  ROTATE,
-  ...Array.from({ length: 63 }, (_, i) => IMG(i + 1)),
-];
+export const DVO_STEPS: DeckStep[] = Array.from({ length: 63 }, (_, i) => IMG(i + 1));
