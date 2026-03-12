@@ -5,16 +5,16 @@ import { type DeckSection, type DeckStep } from "@/data/deck";
 // «ГЕРОИ», «ВИЗУАЛ», «СЦЕНОГРАФИЯ», «НАСЛЕДИЕ» + логические блоки.
 
 export const DVO_SECTIONS: DeckSection[] = [
-  { id: "project", title: "ПРОЕКТ", from: 1 },
-  { id: "stroka", title: "СТРОКА", from: 3 },
-  { id: "palace", title: "ДВОРЕЦ", from: 4 },
-  { id: "heroes", title: "ГЕРОИ", from: 8 },
-  { id: "looks", title: "ОБРАЗЫ", from: 12 },
-  { id: "plot", title: "СЮЖЕТ", from: 18 },
-  { id: "place", title: "МЕСТО", from: 31 },
-  { id: "visual", title: "ВИЗУАЛ", from: 42 },
-  { id: "sceno", title: "СЦЕНОГРАФИЯ", from: 49 },
-  { id: "legacy", title: "НАСЛЕДИЕ", from: 56 },
+  { id: "project", title: "ПРОЕКТ", from: 1, to: 2 },
+  { id: "stroka", title: "СТРОКА", from: 3, to: 3 },
+  { id: "palace", title: "ДВОРЕЦ", from: 4, to: 7 },
+  { id: "heroes", title: "ГЕРОИ", from: 8, to: 11 },
+  { id: "looks", title: "ОБРАЗЫ", from: 12, to: 17 },
+  { id: "plot", title: "СЮЖЕТ", from: 18, to: 30 },
+  { id: "place", title: "МЕСТО", from: 31, to: 41 },
+  { id: "visual", title: "ВИЗУАЛ", from: 42, to: 48 },
+  { id: "sceno", title: "СЦЕНОГРАФИЯ", from: 49, to: 55 },
+  { id: "legacy", title: "НАСЛЕДИЕ", from: 56, to: 63 },
 ];
 
 function sectionIdFor(n: number): DeckSection["id"] {
@@ -32,22 +32,22 @@ function sectionIdFor(n: number): DeckSection["id"] {
 
 const IMG = (n: number): DeckStep => {
   const id = `s${String(n).padStart(2, "0")}`;
-  const num = n;
   return {
     id,
     kind: "image",
-    num,
+    num: n,
     sectionId: sectionIdFor(n),
     src: `/dvorets/slides/slide-${String(n).padStart(2, "0")}.webp`,
-  } as DeckStep;
+  };
 };
 
-// Rotate подсказка (как в Маяке): не блокирует, просто информирует.
-const ROTATE: DeckStep = ({
+// Rotate-подсказка: не блокирует, просто информирует.
+const ROTATE: DeckStep = {
   id: "r01",
   kind: "rotate",
   sectionId: "project",
-} as unknown) as DeckStep;
+  src: "",
+};
 
 export const DVO_STEPS: DeckStep[] = [
   ROTATE,
